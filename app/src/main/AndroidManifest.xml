@@ -12,16 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyAppDemo">
         <activity
-            android:name=".FeedActivity"
+            android:name=".activity.FeedActivity"
             android:exported="false" />
         <activity
-            android:name=".AccInfActivity"
+            android:name=".activity.AccInfActivity"
             android:exported="false" />
         <activity
-            android:name=".LogPageActivity"
+            android:name=".activity.LogPageActivity"
             android:exported="false" />
         <activity
-            android:name=".LaunchActivity"
+            android:name=".activity.LaunchActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true" />
     </application>
 

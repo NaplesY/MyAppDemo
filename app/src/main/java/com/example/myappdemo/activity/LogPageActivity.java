@@ -1,4 +1,4 @@
-package com.example.myappdemo;
+package com.example.myappdemo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.myappdemo.R;
+import com.example.myappdemo.callback.LoginCallback;
+import com.example.myappdemo.database.User;
+import com.example.myappdemo.database.UserViewModel;
 
 public class LogPageActivity extends AppCompatActivity {
 

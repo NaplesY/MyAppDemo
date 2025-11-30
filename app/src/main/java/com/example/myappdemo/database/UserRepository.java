@@ -1,4 +1,4 @@
-package com.example.myappdemo;
+package com.example.myappdemo.database;
 
 import android.content.Context;
 import android.os.Handler;
@@ -6,18 +6,14 @@ import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.myappdemo.callback.GetUsersCallback;
+import com.example.myappdemo.callback.LoginCallback;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-
-interface LoginCallback {
-    void onLoginResult(boolean success, String msg);
-}
-interface GetUsersCallback {
-    void onGetUsersResult(List<User> users);
-}
 
 public class UserRepository {
     private LiveData<User> userLive;

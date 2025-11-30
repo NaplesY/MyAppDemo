@@ -1,4 +1,4 @@
-package com.example.myappdemo;
+package com.example.myappdemo.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -20,6 +20,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.myappdemo.R;
+import com.example.myappdemo.database.User;
+import com.example.myappdemo.database.UserViewModel;
 
 import java.util.function.Consumer;
 

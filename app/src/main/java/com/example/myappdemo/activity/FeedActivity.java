@@ -1,4 +1,4 @@
-package com.example.myappdemo;
+package com.example.myappdemo.activity;
 
 import android.os.Bundle;
 
@@ -13,6 +13,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.myappdemo.feed.FeedAdapter;
+import com.example.myappdemo.R;
+import com.example.myappdemo.callback.FeedItemLongClickListener;
+import com.example.myappdemo.callback.GetUsersCallback;
+import com.example.myappdemo.database.User;
+import com.example.myappdemo.database.UserViewModel;
+import com.example.myappdemo.feed.FeedDataManager;
 
 import java.util.List;
 
@@ -44,6 +52,7 @@ public class FeedActivity extends AppCompatActivity {
         recyclerView1.setLayoutManager(new LinearLayoutManager(this));
         recyclerView1.setAdapter(feedAdapter1);
         userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
+        FeedDataManager dataManager = new FeedDataManager();
 
         //数据刷新
         userViewModel.getAllUsers(new GetUsersCallback() {
@@ -94,7 +103,7 @@ public class FeedActivity extends AppCompatActivity {
         });
 
         //长按删卡
-        feedAdapter1.setOnItemLongClickListener(new FeedAdapter.OnItemLongClickListener() {
+        feedAdapter1.FeedAdapterBuild(dataManager, new FeedItemLongClickListener() {
             @Override
             public void onItemLongClick(int position, User user) {
                 new AlertDialog.Builder(FeedActivity.this)

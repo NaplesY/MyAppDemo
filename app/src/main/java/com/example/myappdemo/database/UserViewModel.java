@@ -1,10 +1,13 @@
-package com.example.myappdemo;
+package com.example.myappdemo.database;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+
+import com.example.myappdemo.callback.GetUsersCallback;
+import com.example.myappdemo.callback.LoginCallback;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,28 +23,28 @@ public class UserViewModel extends AndroidViewModel {
         allUsersLive = userRepository.getAllUsersLive();
     }
 
-    LiveData<User> getUserLiveByAccount(String account){
+    public LiveData<User> getUserLiveByAccount(String account){
         return userRepository.getUserLiveByAccount(account);
     }
 
     LiveData<List<User>> getAllUsersLive(){
         return allUsersLive;
     }
-    void getAllUsers(GetUsersCallback callback){
+    public void getAllUsers(GetUsersCallback callback){
         userRepository.getAllUsers(callback);
     }
 
-    void updateUserInf(String account, Consumer<User> infModifier){
+    public void updateUserInf(String account, Consumer<User> infModifier){
         userRepository.updateUserInf(account, infModifier);
     }
 
-    void deleteAllUsers() {
+    public void deleteAllUsers() {
         userRepository.deleteAllUsers();
     }
-    void register(User user) {
+    public void register(User user) {
         userRepository.register(user);
     }
-    void login(String account, String password, LoginCallback callback) {
+    public void login(String account, String password, LoginCallback callback) {
         userRepository.login(account, password, callback);
     }
     void update(User user) {
