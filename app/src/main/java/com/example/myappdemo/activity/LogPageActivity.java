@@ -52,7 +52,7 @@ public class LogPageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String account = etAccount.getText().toString().trim();
                 String password = etPassword.getText().toString().trim();
-                User userNew = new User(account, password, "请输入昵称", null);
+                User userNew = new User(account, password);
                 userViewModel.register(userNew);
             }
         });

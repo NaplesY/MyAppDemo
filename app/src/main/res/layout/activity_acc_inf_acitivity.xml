@@ -5,25 +5,37 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".activity.AccInfActivity">
 
-    <TextView
-        android:id="@+id/accName"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.228" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.55" />
 
     <View
         android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/shape_inf_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,28 +45,116 @@
         android:id="@+id/editTextName"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
+        android:autofillHints=""
         android:ems="10"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:imeOptions="actionDone"
-        android:visibility="gone"
         android:inputType="text"
-        android:text="请输入昵称"
-        android:textSize="18dp"
-        app:layout_constraintBottom_toBottomOf="@+id/accName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.338"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/accName"
-        app:layout_constraintVertical_bias="0.281" />
+        android:hint="请输入昵称"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/userName"
+        app:layout_constraintStart_toStartOf="@+id/userName"
+        app:layout_constraintTop_toTopOf="@+id/userName" />
 
     <Button
-        android:id="@+id/buttonEtName"
+        android:id="@+id/buttonEditName"
         android:layout_width="80dp"
-        android:layout_height="38dp"
+        android:layout_height="48dp"
         android:text="修改"
-        app:layout_constraintBottom_toBottomOf="@+id/accName"
+        app:layout_constraintBottom_toBottomOf="@+id/userName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/accName" />
+        app:layout_constraintStart_toEndOf="@+id/userName"
+        app:layout_constraintTop_toTopOf="@+id/userName" />
 
+    <TextView
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toStartOf="@+id/buttonEditName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline1" />
+
+    <ImageView
+        android:id="@+id/userAvatar"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        app:layout_constraintTop_toTopOf="@+id/view2"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/userNameMain"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/userNameMain"
+        android:layout_width="125dp"
+        android:layout_height="37dp"
+        android:text="昵称"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/userAccount"
+        app:layout_constraintStart_toEndOf="@+id/userAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view2" />
+
+    <TextView
+        android:id="@+id/userAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="账号"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintStart_toStartOf="@+id/userNameMain"
+        app:layout_constraintTop_toBottomOf="@+id/userNameMain" />
+
+
+    <Switch
+        android:id="@+id/switchShowAvatar"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="是否展示图片"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/switchShowVideo"
+        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <Switch
+        android:id="@+id/switchShowVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="是否展示视频"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toStartOf="@+id/editVideoDuration"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <EditText
+        android:id="@+id/editVideoDuration"
+        android:layout_width="90dp"
+        android:layout_height="60dp"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="编辑时长"
+        android:imeOptions="actionDone"
+        app:layout_constraintBottom_toBottomOf="@+id/switchShowVideo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/switchShowVideo"
+        app:layout_constraintTop_toTopOf="@+id/switchShowVideo" />
+
+    <Button
+        android:id="@+id/buttonCreateAvatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="生成头像"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/switchShowAvatar"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

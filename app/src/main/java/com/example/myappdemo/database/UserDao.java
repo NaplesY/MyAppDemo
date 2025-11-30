@@ -24,13 +24,15 @@ public interface UserDao {
     void deleteAllUsers();
 
     @Query("SELECT * FROM user")
-    LiveData<List<User>>  getAllUsersLive();
+    LiveData<List<User>> getAllUsersLive();
+
     @Query("SELECT * FROM user")
-    List<User>  getAllUsers();
+    List<User> getAllUsers();
 
 
     @Query("SELECT * FROM user WHERE account = :account")
     LiveData<User> getUserLiveByAccount(String account);
+
     @Query("SELECT * FROM user WHERE account = :account")
     User getUserByAccount(String account);
 }
