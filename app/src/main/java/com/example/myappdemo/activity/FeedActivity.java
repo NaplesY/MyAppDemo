@@ -1,6 +1,12 @@
 package com.example.myappdemo.activity;
 
+import static com.example.myappdemo.feed.FeedAdapter.TYPE_LOADING;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -10,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -20,7 +27,10 @@ import com.example.myappdemo.callback.FeedItemLongClickListener;
 import com.example.myappdemo.callback.GetUsersCallback;
 import com.example.myappdemo.database.User;
 import com.example.myappdemo.database.UserViewModel;
+import com.example.myappdemo.feed.FeedCardRegistry;
 import com.example.myappdemo.feed.FeedDataManager;
+import com.example.myappdemo.feed.card.AvatarFeedCard;
+import com.example.myappdemo.feed.card.TextFeedCard;
 
 import java.util.List;
 
@@ -29,7 +39,10 @@ public class FeedActivity extends AppCompatActivity {
     RecyclerView recyclerView1;
     FeedAdapter feedAdapter1;
     UserViewModel userViewModel;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    Switch swGridLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private GridLayoutManager gridLayoutManager;
     private boolean isLoadingMore = false; // 避免重复加载的标志
 
     @Override
@@ -43,19 +56,26 @@ public class FeedActivity extends AppCompatActivity {
             return insets;
         });
 
+        swGridLayout = findViewById(R.id.switchGridLayout);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setColorSchemeResources(
-                android.R.color.holo_blue_bright
-        );
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
         recyclerView1 = findViewById(R.id.recyclerView1);
         feedAdapter1 = new FeedAdapter();
-        recyclerView1.setLayoutManager(new LinearLayoutManager(this));
+        gridLayoutManager = new GridLayoutManager(this, 1);
+        recyclerView1.setLayoutManager(gridLayoutManager);
         recyclerView1.setAdapter(feedAdapter1);
         userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
         FeedDataManager dataManager = new FeedDataManager();
+        FeedCardRegistry registry = FeedCardRegistry.getInstance();
+
+        //在此注册卡片
+        registry.registerCard(new AvatarFeedCard());
+        registry.registerCard(new TextFeedCard());
+
 
         //数据刷新
         userViewModel.getAllUsers(new GetUsersCallback() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onGetUsersResult(List<User> users) {
                 feedAdapter1.setAllUsers(users);
@@ -67,6 +87,7 @@ public class FeedActivity extends AppCompatActivity {
             public void onRefresh() {
                 //展示FEED流
                 userViewModel.getAllUsers(new GetUsersCallback() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onGetUsersResult(List<User> users) {
                         feedAdapter1.setAllUsers(users);
@@ -88,7 +109,6 @@ public class FeedActivity extends AppCompatActivity {
                 if (dy <= 0) return;
                 LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (lm == null) return;
-
                 // 最后一个可见项的位置
                 int lastVisiblePos = lm.findLastVisibleItemPosition();
                 // 总Item数
@@ -98,6 +118,18 @@ public class FeedActivity extends AppCompatActivity {
                         && !isLoadingMore
                         && totalItemCount > 0) {
                     loadMoreUser(); // 加载更多
+                }
+            }
+        });
+        //确保加载动画只有一列
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int itemType = feedAdapter1.getItemViewType(position);
+                if (gridLayoutManager.getSpanCount() == 2) {
+                    return itemType == TYPE_LOADING ? 2 : 1;
+                } else {
+                    return 1; // 单列时所有Item都占1列
                 }
             }
         });
@@ -116,6 +148,21 @@ public class FeedActivity extends AppCompatActivity {
                         .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
                         .create()
                         .show();
+            }
+        });
+
+        //切换单双列
+        swGridLayout.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                gridLayoutManager.setSpanCount(isChecked ? 2 : 1);
+                feedAdapter1.notifyDataSetChanged();
+                if (isChecked) {
+                    Toast.makeText(FeedActivity.this, "切换为双列", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FeedActivity.this, "切换为单列", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

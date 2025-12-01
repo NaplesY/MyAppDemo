@@ -1,8 +1,5 @@
 package com.example.myappdemo.feed;
 
-import static com.example.myappdemo.constant.FeedConstant.TYPE_LOADING;
-import static com.example.myappdemo.constant.FeedConstant.TYPE_TEXT;
-
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,19 +8,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myappdemo.R;
 import com.example.myappdemo.callback.FeedItemLongClickListener;
+import com.example.myappdemo.R;
 import com.example.myappdemo.database.User;
+import com.example.myappdemo.feed.card.FeedCard;
 import com.example.myappdemo.feed.viewholder.FeedViewHolder;
 import com.example.myappdemo.feed.viewholder.LoadingFeedViewHolder;
-import com.example.myappdemo.feed.viewholder.TextFeedViewHolder;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
+    public static final int TYPE_LOADING = 0;
     private boolean isLoading = false; //加载状态标志
     private FeedItemLongClickListener longClickListener;
     private FeedDataManager dataManager;
@@ -39,18 +35,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     public void setLoading(boolean loading) {
         isLoading = loading;
         notifyDataSetChanged();
-    }
-
-    // 设置卡片类型ViewType
-    @Override
-    public int getItemViewType(int position) {
-
-        if (isLoading && position == getItemCount() - 1) {
-            return TYPE_LOADING;
-        }
-
-        User user = dataManager.getUser(position);//之后直接根据user判断type
-        return TYPE_TEXT;
     }
 
     // 刷新数据
@@ -74,23 +58,36 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         notifyItemRangeChanged(position, getItemCount() - position);
     }
 
+    // 设置卡片类型viewType
+    @Override
+    public int getItemViewType(int position) {
+        //加载状态
+        if (isLoading && position == getItemCount() - 1) {
+            return TYPE_LOADING;
+        }
+        //根据user判断viewType
+        User user = dataManager.getUser(position);
+        FeedCard card = FeedCardRegistry.getInstance().chooseCardForUser(user);
+        return card.getViewType();
+    }
 
+    // 创建ViewHolder
     @NonNull
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        switch (viewType) {
-            case TYPE_LOADING:
-                View loadingView = layoutInflater.inflate(R.layout.cell_loading, parent, false);
-                return new LoadingFeedViewHolder(loadingView);
-            case TYPE_TEXT:
-                View textView = layoutInflater.inflate(R.layout.cell_card1, parent, false);
-                return new TextFeedViewHolder(textView);
-            default:
-                throw new IllegalArgumentException("未知ViewType：" + viewType);
+        if(viewType == TYPE_LOADING){
+            View loadingView = layoutInflater.inflate(R.layout.cell_loading, parent, false);
+            return new LoadingFeedViewHolder(loadingView);
         }
+
+        FeedCard feedcard = FeedCardRegistry.getInstance().findCardByViewType(viewType);
+        View itemview = layoutInflater.inflate(feedcard.getLayoutResId(), parent, false);
+        return feedcard.createViewHolder(itemview);
+
     }
 
+    // 给ViewHolder绑定数据
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, @SuppressLint("RecyclerView") int position) {
         if (holder.getItemViewType() == TYPE_LOADING) {
@@ -109,6 +106,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         });
     }
 
+    // getItemCount
     @Override
     public int getItemCount() {
         return dataManager.getItemCount();

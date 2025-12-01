@@ -1,6 +1,5 @@
 package com.example.myappdemo.activity;
 
-import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -105,7 +104,7 @@ public class AccInfActivity extends AppCompatActivity {
                 userName.setVisibility(INVISIBLE);
             }
         });
-        // 结束昵称编辑
+        // 结束昵称编辑条件
         etName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -175,7 +174,7 @@ public class AccInfActivity extends AppCompatActivity {
                 }
             }
         });
-        //结束编辑时长
+        //结束时长编辑条件
         etVideoDuration.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

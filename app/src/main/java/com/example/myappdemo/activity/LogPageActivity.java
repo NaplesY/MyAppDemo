@@ -40,9 +40,9 @@ public class LogPageActivity extends AppCompatActivity {
 
         etAccount = findViewById(R.id.editTextAccount);
         etPassword = findViewById(R.id.editTextPassword);
-        btnRegister = findViewById(R.id.btnRegister);
-        btnLogin = findViewById(R.id.btnLogin);
-        btnDeleteAll = findViewById(R.id.btnDeleteAll);
+        btnRegister = findViewById(R.id.buttonRegister);
+        btnLogin = findViewById(R.id.buttonLogin);
+        btnDeleteAll = findViewById(R.id.buttonDeleteAll);
 
         userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
 

@@ -10,17 +10,17 @@ import com.example.myappdemo.database.User;
 
 public class TextFeedViewHolder extends FeedViewHolder{
     private final TextView textViewName;
-    private final TextView textViewSign;
+    private final TextView textViewAccount;
 
     public TextFeedViewHolder(@NonNull View itemView) {
         super(itemView);
         textViewName = itemView.findViewById(R.id.textViewName);
-        textViewSign = itemView.findViewById(R.id.textViewSign);
+        textViewAccount = itemView.findViewById(R.id.textViewAccount);
     }
 
     @Override
     public void bindData(User user) {
         textViewName.setText(user.getName());
-        textViewSign.setText(user.getAccount());
+        textViewAccount.setText(user.getAccount());
     }
 }
