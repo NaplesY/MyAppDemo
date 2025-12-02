@@ -12,19 +12,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.5" />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
+        app:layout_constraintGuide_percent="0.6" />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="0.7" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
@@ -70,10 +70,29 @@
         android:id="@+id/switchGridLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:height="48dp"
         android:text="切换单双列排版"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3">
+
+        <TextView
+            android:id="@+id/textViewLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:text="TextView"
+            android:textSize="12sp" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,16 +17,19 @@ import com.example.myappdemo.feed.viewholder.LoadingFeedViewHolder;
 
 import java.util.List;
 
-public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
+public class feedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
     public static final int TYPE_LOADING = 0;
     private boolean isLoading = false; //加载状态标志
     private FeedItemLongClickListener longClickListener;
-    private FeedDataManager dataManager;
+    private final FeedDataManager dataManager;
 
-
-    public void FeedAdapterBuild(FeedDataManager dataManager, FeedItemLongClickListener listener) {
+    public feedAdapter(FeedDataManager dataManager) {
         this.dataManager = dataManager;
+    }
+
+
+    public void onFeedItemLongClickListener(FeedItemLongClickListener listener) {
         this.longClickListener = listener;
     }
 
@@ -69,6 +72,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         User user = dataManager.getUser(position);
         FeedCard card = FeedCardRegistry.getInstance().chooseCardForUser(user);
         return card.getViewType();
+    }
+
+    // 获取用户id
+    public int getCardId(int position) {
+        User user = dataManager.getUser(position);
+        return user.getId();
     }
 
     // 创建ViewHolder
