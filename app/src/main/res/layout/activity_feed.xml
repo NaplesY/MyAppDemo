@@ -46,25 +46,7 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
-        app:layout_constraintEnd_toStartOf="@+id/button5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="@+id/button4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button4"
-        app:layout_constraintTop_toTopOf="@+id/button4" />
 
     <Switch
         android:id="@+id/switchGridLayout"
@@ -77,14 +59,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
+    <Switch
+        android:id="@+id/switchLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:height="48dp"
+        android:text="开启曝光事件检测"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3" />
+
     <ScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/scrollViewLog"
         android:layout_width="300dp"
         android:layout_height="150dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline3">
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/textViewLog"

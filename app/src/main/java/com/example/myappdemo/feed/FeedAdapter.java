@@ -12,8 +12,10 @@ import com.example.myappdemo.callback.FeedItemLongClickListener;
 import com.example.myappdemo.R;
 import com.example.myappdemo.database.User;
 import com.example.myappdemo.feed.card.FeedCard;
+import com.example.myappdemo.feed.card.LoadingFeedCard;
 import com.example.myappdemo.feed.viewholder.FeedViewHolder;
 import com.example.myappdemo.feed.viewholder.LoadingFeedViewHolder;
+import com.example.myappdemo.feed.viewholder.VideoFeedViewHolder;
 
 import java.util.List;
 
@@ -82,20 +84,26 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
     public void playVideo(@NonNull FeedViewHolder holder, int position){
         User user = dataManager.getUser(position);
-        FeedCard card = FeedCardRegistry.getInstance().chooseCardForUser(user);
-        if (card.getViewType() == 3){
+        if (holder instanceof VideoFeedViewHolder) {
             holder.startPlay(user.getVideoDuration());
         }
     }
-
+    public void stopVideo(@NonNull FeedViewHolder holder, int position){
+        if (holder instanceof VideoFeedViewHolder) {
+            holder.stopPlay();
+        }
+    }
 
     // 创建ViewHolder
     @NonNull
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-
         FeedCard feedcard = FeedCardRegistry.getInstance().findCardByViewType(viewType);
+        if (feedcard == null) {
+            feedcard = new LoadingFeedCard();
+        }
+        
         View itemview = layoutInflater.inflate(feedcard.getLayoutResId(), parent, false);
         return feedcard.createViewHolder(itemview);
 

@@ -1,5 +1,7 @@
 package com.example.myappdemo.callback;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 public interface CardExposureListener {
 
     //cardId 卡片id
@@ -15,6 +17,6 @@ public interface CardExposureListener {
     void onCardFullyExpose(int cardId, float visibleRatio);
 
     //卡片消失
-    void onCardDisappear(int cardId);
+    void onCardDisappear(RecyclerView.ViewHolder holder, int cardId);
 
 }
