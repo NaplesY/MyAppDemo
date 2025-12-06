@@ -1,6 +1,6 @@
 package com.example.myappdemo.activity;
 
-import static com.example.myappdemo.feed.feedAdapter.TYPE_LOADING;
+import static com.example.myappdemo.feed.FeedAdapter.TYPE_LOADING;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -29,7 +29,7 @@ import com.example.myappdemo.callback.CardExposureListener;
 import com.example.myappdemo.feed.CardExposureCalculator;
 import com.example.myappdemo.feed.CardExposureLogTool;
 import com.example.myappdemo.feed.CardExposureState;
-import com.example.myappdemo.feed.feedAdapter;
+import com.example.myappdemo.feed.FeedAdapter;
 import com.example.myappdemo.R;
 import com.example.myappdemo.callback.FeedItemLongClickListener;
 import com.example.myappdemo.callback.GetUsersCallback;
@@ -39,6 +39,9 @@ import com.example.myappdemo.feed.FeedCardRegistry;
 import com.example.myappdemo.feed.FeedDataManager;
 import com.example.myappdemo.feed.card.AvatarFeedCard;
 import com.example.myappdemo.feed.card.TextFeedCard;
+import com.example.myappdemo.feed.card.VideoFeedCard;
+import com.example.myappdemo.feed.viewholder.FeedViewHolder;
+import com.example.myappdemo.feed.viewholder.VideoFeedViewHolder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +50,7 @@ import java.util.Map;
 public class FeedActivity extends AppCompatActivity implements CardExposureListener {
 
     RecyclerView recyclerView;
-    feedAdapter feedAdapter;
+    FeedAdapter feedAdapter;
     UserViewModel userViewModel;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch swGridLayout;
@@ -77,7 +80,7 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
         scrollView = findViewById(R.id.scrollView);
         textViewLog = findViewById(R.id.textViewLog);
         FeedDataManager dataManager = new FeedDataManager();
-        feedAdapter = new feedAdapter(dataManager);
+        feedAdapter = new FeedAdapter(dataManager);
         gridLayoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(feedAdapter);
@@ -87,7 +90,8 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
         FeedCardRegistry registry = FeedCardRegistry.getInstance();
         cardExposureListeners();
 
-        //在此注册卡片
+        //在此注册卡片（先注册优先）
+        registry.registerCard(new VideoFeedCard());
         registry.registerCard(new AvatarFeedCard());
         registry.registerCard(new TextFeedCard());
 
@@ -140,13 +144,13 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
                 }
             }
         });
-        //确保加载动画只有一列
+        //特殊卡片保持单列
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 int itemType = feedAdapter.getItemViewType(position);
                 if (gridLayoutManager.getSpanCount() == 2) {
-                    return itemType == TYPE_LOADING ? 2 : 1;
+                    return itemType == 0 || itemType == 3 ? 2 : 1;
                 } else {
                     return 1; // 单列时所有Item都占1列
                 }
@@ -231,28 +235,36 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
 
 
     @Override
-    public void onCardStartExpose(int cardId, float visibleRatio) {
+    public void onCardStartExpose(int position, float visibleRatio) {
+        int cardId = feedAdapter.getCardId(position);
         String log = "开始露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
         Log.d("CardExposure", log);
         logTool.addLog(log);
     }
 
     @Override
-    public void onCardHalfExpose(int cardId, float visibleRatio) {
+    public void onCardHalfExpose(int position, float visibleRatio) {
+        int cardId = feedAdapter.getCardId(position);
         String log = "露出50% | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
         Log.d("CardExposure", log);
         logTool.addLog(log);
     }
 
     @Override
-    public void onCardFullyExpose(int cardId, float visibleRatio) {
+    public void onCardFullyExpose(int position, float visibleRatio) {
+        int cardId = feedAdapter.getCardId(position);
         String log = "完整露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
         Log.d("CardExposure", log);
         logTool.addLog(log);
+        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
+        if (viewHolder instanceof FeedViewHolder) {
+            feedAdapter.playVideo((FeedViewHolder) viewHolder, position);
+        }
     }
 
     @Override
-    public void onCardDisappear(int cardId) {
+    public void onCardDisappear(int position) {
+        int cardId = feedAdapter.getCardId(position);
         String log = "卡片消失 | cardId: " + cardId;
         Log.d("CardExposure", log);
         logTool.addLog(log);
@@ -268,21 +280,21 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
 
             View cardView = viewHolder != null ? viewHolder.itemView : null;
             float visibleRatio = 0.0f;
-            int cardId = feedAdapter.getCardId(position);
+
             // 获取曝光状态or新建
-            CardExposureState exposureState = exposureStateMap.computeIfAbsent(cardId, i -> new CardExposureState(i, false, false, false, true));
+            CardExposureState exposureState = exposureStateMap.computeIfAbsent(position, i -> new CardExposureState(i, false, false, false, true));
             // 计算曝光比例
             if (cardView != null) {
                 visibleRatio = CardExposureCalculator.calculateVisibleRatio(cardView);
             }
             // 判断曝光状态
-            updateCardExposureState(cardId, visibleRatio, exposureState);
+            updateCardExposureState(position, visibleRatio, exposureState);
         }
         return null;
 
     }
     //根据曝光比例更新曝光状态，触发回调
-    private void updateCardExposureState(int cardId, float visibleRatio, CardExposureState exposureState) {
+    private void updateCardExposureState(int position, float visibleRatio, CardExposureState exposureState) {
         if (exposureState == null) {
             return;
         }
@@ -291,23 +303,23 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
         // 卡片露出
         if (currentVisible){
             if (!exposureState.isHasExposed()){
-                onCardStartExpose(cardId, visibleRatio);
+                onCardStartExpose(position, visibleRatio);
                 exposureState.setHasExposed(true);
             }
             // 卡片露出超过50%
             if (visibleRatio > 0.5f && !exposureState.isHasHalfExposed()){
-                onCardHalfExpose(cardId, visibleRatio);
+                onCardHalfExpose(position, visibleRatio);
                 exposureState.setHasHalfExposed(true);
             }
             // 卡片完整露出
             if (visibleRatio == 1.0f && !exposureState.isHasFullyExposed()){
-                onCardFullyExpose(cardId, visibleRatio);
+                onCardFullyExpose(position, visibleRatio);
                 exposureState.setHasFullyExposed(true);
             }
         }
         // 卡片消失
         if (lastVisible && !currentVisible){
-            onCardDisappear(cardId);
+            onCardDisappear(position);
             exposureState.reset();
         }
         exposureState.setHasDisappear(!currentVisible);

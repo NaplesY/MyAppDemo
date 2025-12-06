@@ -13,6 +13,6 @@ public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
     }
 
     public abstract void bindData(User user);
-    public void startPlay() {}
+    public void startPlay(int videoDuration) {}
     public void stopPlay() {}
 }

@@ -17,14 +17,14 @@ import com.example.myappdemo.feed.viewholder.LoadingFeedViewHolder;
 
 import java.util.List;
 
-public class feedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
+public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
     public static final int TYPE_LOADING = 0;
     private boolean isLoading = false; //加载状态标志
     private FeedItemLongClickListener longClickListener;
     private final FeedDataManager dataManager;
 
-    public feedAdapter(FeedDataManager dataManager) {
+    public FeedAdapter(FeedDataManager dataManager) {
         this.dataManager = dataManager;
     }
 
@@ -80,15 +80,20 @@ public class feedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         return user.getId();
     }
 
+    public void playVideo(@NonNull FeedViewHolder holder, int position){
+        User user = dataManager.getUser(position);
+        FeedCard card = FeedCardRegistry.getInstance().chooseCardForUser(user);
+        if (card.getViewType() == 3){
+            holder.startPlay(user.getVideoDuration());
+        }
+    }
+
+
     // 创建ViewHolder
     @NonNull
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        if(viewType == TYPE_LOADING){
-            View loadingView = layoutInflater.inflate(R.layout.cell_loading, parent, false);
-            return new LoadingFeedViewHolder(loadingView);
-        }
 
         FeedCard feedcard = FeedCardRegistry.getInstance().findCardByViewType(viewType);
         View itemview = layoutInflater.inflate(feedcard.getLayoutResId(), parent, false);
