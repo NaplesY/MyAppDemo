@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myappdemo.feed.adapter.FeedAdapter;
+
 public class FeedListManager {
     private final RecyclerView recyclerView;
     private final GridLayoutManager gridLayoutManager;

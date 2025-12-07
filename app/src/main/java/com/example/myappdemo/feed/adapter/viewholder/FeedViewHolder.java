@@ -1,11 +1,11 @@
-package com.example.myappdemo.feed.viewholder;
+package com.example.myappdemo.feed.adapter.viewholder;
 
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
 
 public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
     public FeedViewHolder(@NonNull View itemView) {

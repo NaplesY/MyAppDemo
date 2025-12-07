@@ -1,8 +1,6 @@
 package com.example.myappdemo.feed;
 
-import android.annotation.SuppressLint;
-
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +26,7 @@ public class FeedDataManager {
     }
 
     // 删除指定位置数据
-    void removeUser(int position) {
+    public void removeUser(int position) {
         if (position >= 0 && position < allUsers.size()) {
             allUsers.remove(position);
         }

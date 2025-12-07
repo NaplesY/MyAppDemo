@@ -3,9 +3,9 @@ package com.example.myappdemo.feed.card;
 import android.view.View;
 
 import com.example.myappdemo.R;
-import com.example.myappdemo.database.User;
-import com.example.myappdemo.feed.viewholder.FeedViewHolder;
-import com.example.myappdemo.feed.viewholder.TextFeedViewHolder;
+import com.example.myappdemo.data.User;
+import com.example.myappdemo.feed.adapter.viewholder.FeedViewHolder;
+import com.example.myappdemo.feed.adapter.viewholder.TextFeedViewHolder;
 
 public class TextFeedCard implements FeedCard {
     public static final int VIEW_TYPE = 1;

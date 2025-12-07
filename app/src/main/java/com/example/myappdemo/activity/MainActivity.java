@@ -10,12 +10,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myappdemo.R;
+import com.example.myappdemo.data.UserViewModel;
+import com.example.myappdemo.utils.GlidePreCacheUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button Button1, Button2;
+    private Button Button1, Button2;
+    private UserViewModel userViewModel;
+    private GlidePreCacheUtils preCacheUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +35,19 @@ public class MainActivity extends AppCompatActivity {
 
         Button1 = findViewById(R.id.button1);
         Button2 = findViewById(R.id.button2);
+        userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
+        preCacheUtils = new GlidePreCacheUtils(this);
+
+        // 数据缓存
+        userViewModel.initUsers();
+        userViewModel.getAllUsersLive().observe(this, users -> {
+            preCacheUtils.preCacheAllUserImages(users);
+        });
 
         Button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LogPageActivity.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });

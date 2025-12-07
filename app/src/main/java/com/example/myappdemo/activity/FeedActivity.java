@@ -1,6 +1,5 @@
 package com.example.myappdemo.activity;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +18,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -27,20 +25,17 @@ import com.example.myappdemo.feed.FeedListManager;
 import com.example.myappdemo.feed.cardexposure.CardExposureCallback;
 import com.example.myappdemo.feed.cardexposure.CardExposureLogTool;
 import com.example.myappdemo.feed.cardexposure.CardExposureManager;
-import com.example.myappdemo.feed.FeedAdapter;
+import com.example.myappdemo.feed.adapter.FeedAdapter;
 import com.example.myappdemo.R;
 import com.example.myappdemo.callback.FeedItemLongClickListener;
-import com.example.myappdemo.callback.GetUsersCallback;
-import com.example.myappdemo.database.User;
-import com.example.myappdemo.database.UserViewModel;
+import com.example.myappdemo.data.User;
+import com.example.myappdemo.data.UserViewModel;
 import com.example.myappdemo.feed.card.FeedCardRegistry;
 import com.example.myappdemo.feed.FeedDataManager;
 import com.example.myappdemo.feed.card.AvatarFeedCard;
 import com.example.myappdemo.feed.card.TextFeedCard;
 import com.example.myappdemo.feed.card.VideoFeedCard;
-import com.example.myappdemo.feed.viewholder.FeedViewHolder;
-
-import java.util.List;
+import com.example.myappdemo.feed.adapter.viewholder.FeedViewHolder;
 
 public class FeedActivity extends AppCompatActivity {
 

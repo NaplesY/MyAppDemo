@@ -1,4 +1,4 @@
-package com.example.myappdemo.feed.viewholder;
+package com.example.myappdemo.feed.adapter.viewholder;
 
 import android.view.View;
 import android.widget.TextView;
@@ -6,7 +6,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.myappdemo.R;
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
 
 public class TextFeedViewHolder extends FeedViewHolder{
     private final TextView textViewName;

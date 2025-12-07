@@ -16,10 +16,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myappdemo.R;
 import com.example.myappdemo.callback.LoginCallback;
-import com.example.myappdemo.database.User;
-import com.example.myappdemo.database.UserViewModel;
+import com.example.myappdemo.data.User;
+import com.example.myappdemo.data.UserViewModel;
 
-public class LogPageActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
 
     EditText etAccount, etPassword;
@@ -67,12 +67,12 @@ public class LogPageActivity extends AppCompatActivity {
                     @Override
                     public void onLoginResult(boolean success, String msg) {
                         if (success) {
-                            Toast.makeText(LogPageActivity.this, msg, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LogPageActivity.this, AccInfActivity.class);
+                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, AccountInfoActivity.class);
                             intent.putExtra("ACCOUNT", account);
                             startActivity(intent);
                         } else {
-                            Toast.makeText(LogPageActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

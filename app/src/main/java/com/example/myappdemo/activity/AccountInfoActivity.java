@@ -31,12 +31,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.myappdemo.R;
 import com.example.myappdemo.callback.OnFinishEditListener;
-import com.example.myappdemo.database.User;
-import com.example.myappdemo.database.UserViewModel;
+import com.example.myappdemo.data.User;
+import com.example.myappdemo.data.UserViewModel;
 
 import java.util.function.Consumer;
 
-public class AccInfActivity extends AppCompatActivity {
+public class AccountInfoActivity extends AppCompatActivity {
 
     EditText etName, etVideoDuration;
     ImageView userAvatar;
@@ -87,7 +87,7 @@ public class AccInfActivity extends AppCompatActivity {
                 userName.setText(nameText);
                 userNameMain.setText(nameText);
                 userAccount.setText(accountText);
-                Glide.with(AccInfActivity.this)
+                Glide.with(AccountInfoActivity.this)
                         .load(avatarPath)
                         .placeholder(android.R.drawable.progress_indeterminate_horizontal) // 加载中显示的默认图
                         .error(android.R.drawable.ic_menu_report_image) // 加载失败显示的图
@@ -136,6 +136,13 @@ public class AccInfActivity extends AppCompatActivity {
                 });
             }
         });
+        // 设置开关的默认状态
+        userViewModel.getUserLiveByAccount(account).observe(this, user -> {
+            if (user != null) {
+                swShowAvatar.setChecked(user.isHasAvatar());
+                swShowVideo.setChecked(user.isHasVideo());
+            }
+        });
         // 是否展示头像
         swShowAvatar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -149,9 +156,9 @@ public class AccInfActivity extends AppCompatActivity {
                     }
                 });
                 if (isChecked) {
-                    Toast.makeText(AccInfActivity.this, "将会展示头像", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AccountInfoActivity.this, "将会展示头像", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(AccInfActivity.this, "将会隐藏头像", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AccountInfoActivity.this, "将会隐藏头像", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -168,9 +175,9 @@ public class AccInfActivity extends AppCompatActivity {
                     }
                 });
                 if (isChecked) {
-                    Toast.makeText(AccInfActivity.this, "将会展示视频", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AccountInfoActivity.this, "将会展示视频", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(AccInfActivity.this, "将会隐藏视频", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AccountInfoActivity.this, "将会隐藏视频", Toast.LENGTH_SHORT).show();
                 }
             }
         });

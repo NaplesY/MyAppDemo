@@ -1,6 +1,6 @@
 package com.example.myappdemo.callback;
 
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
 
 import java.util.List;
 

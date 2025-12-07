@@ -20,10 +20,10 @@
             android:name=".activity.FeedActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.AccInfActivity"
+            android:name=".activity.AccountInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.LogPageActivity"
+            android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".activity.LaunchActivity"

@@ -1,4 +1,4 @@
-package com.example.myappdemo.feed.viewholder;
+package com.example.myappdemo.feed.adapter.viewholder;
 
 import android.annotation.SuppressLint;
 import android.os.CountDownTimer;
@@ -9,11 +9,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.myappdemo.R;
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
 
 public class VideoFeedViewHolder extends FeedViewHolder {
     private final TextView textViewName;
@@ -55,6 +55,7 @@ public class VideoFeedViewHolder extends FeedViewHolder {
                 .load(user.getAvatarPath())
                 .placeholder(android.R.drawable.progress_indeterminate_horizontal) // 加载中显示的默认图
                 .error(android.R.drawable.ic_menu_report_image) // 加载失败显示的图
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // 缓存
                 .circleCrop()
                 .into(imageViewAvatar);
         videoDuration = user.getVideoDuration();
@@ -62,6 +63,7 @@ public class VideoFeedViewHolder extends FeedViewHolder {
                 .load(user.getVideoCoverPath())
                 .placeholder(android.R.drawable.progress_indeterminate_horizontal) // 加载中显示的默认图
                 .error(android.R.drawable.ic_menu_report_image) // 加载失败显示的图
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // 缓存
                 .into(imageViewCover);
         textViewCountdown.setText("视频时长: " + videoDuration + "s");
 

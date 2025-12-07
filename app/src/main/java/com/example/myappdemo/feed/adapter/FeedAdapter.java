@@ -1,4 +1,4 @@
-package com.example.myappdemo.feed;
+package com.example.myappdemo.feed.adapter;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -9,12 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myappdemo.callback.FeedItemLongClickListener;
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
+import com.example.myappdemo.feed.FeedDataManager;
 import com.example.myappdemo.feed.card.FeedCard;
 import com.example.myappdemo.feed.card.FeedCardRegistry;
 import com.example.myappdemo.feed.card.LoadingFeedCard;
-import com.example.myappdemo.feed.viewholder.FeedViewHolder;
-import com.example.myappdemo.feed.viewholder.VideoFeedViewHolder;
+import com.example.myappdemo.feed.adapter.viewholder.FeedViewHolder;
+import com.example.myappdemo.feed.adapter.viewholder.VideoFeedViewHolder;
 
 import java.util.List;
 

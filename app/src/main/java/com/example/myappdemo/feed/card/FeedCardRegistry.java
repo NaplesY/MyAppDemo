@@ -1,6 +1,6 @@
 package com.example.myappdemo.feed.card;
 
-import com.example.myappdemo.database.User;
+import com.example.myappdemo.data.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;

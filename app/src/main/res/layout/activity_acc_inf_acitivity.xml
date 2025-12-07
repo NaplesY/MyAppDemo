@@ -8,7 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".activity.AccInfActivity">
+    tools:context=".activity.AccountInfoActivity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"
