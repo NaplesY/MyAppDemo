@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myappdemo.data.User;
 
 public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
@@ -12,7 +13,7 @@ public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public abstract void bindData(User user);
+    public abstract void bindData(User user, RequestOptions options);
     public void startPlay(int videoDuration) {}
     public void stopPlay() {}
 }

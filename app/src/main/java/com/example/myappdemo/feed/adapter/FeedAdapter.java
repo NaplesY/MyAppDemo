@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myappdemo.callback.FeedItemLongClickListener;
 import com.example.myappdemo.data.User;
 import com.example.myappdemo.feed.FeedDataManager;
@@ -16,6 +18,7 @@ import com.example.myappdemo.feed.card.FeedCardRegistry;
 import com.example.myappdemo.feed.card.LoadingFeedCard;
 import com.example.myappdemo.feed.adapter.viewholder.FeedViewHolder;
 import com.example.myappdemo.feed.adapter.viewholder.VideoFeedViewHolder;
+import com.example.myappdemo.utils.ViewHolderPreCacheUtils;
 
 import java.util.List;
 
@@ -25,9 +28,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     private boolean isLoading = false; //加载状态标志
     private FeedItemLongClickListener longClickListener;
     private final FeedDataManager dataManager;
+    private RequestOptions imageOptions;
 
     public FeedAdapter(FeedDataManager dataManager) {
         this.dataManager = dataManager;
+        // 通用图片设置
+        imageOptions = new RequestOptions()
+                .skipMemoryCache(false)
+                .placeholder(android.R.drawable.progress_indeterminate_horizontal) // 加载中显示的默认图
+                .error(android.R.drawable.ic_menu_report_image) // 加载失败显示的图
+                .diskCacheStrategy(DiskCacheStrategy.ALL); // 缓存
     }
 
 
@@ -98,6 +108,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     @NonNull
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         FeedCard feedcard = FeedCardRegistry.getInstance().findCardByViewType(viewType);
         if (feedcard == null) {
@@ -116,7 +127,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             return;
         }
         User user = dataManager.getUser(position);
-        holder.bindData(user);
+        holder.bindData(user, imageOptions);
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {

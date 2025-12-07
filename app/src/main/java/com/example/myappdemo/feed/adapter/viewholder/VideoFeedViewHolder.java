@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myappdemo.R;
 import com.example.myappdemo.data.User;
 
@@ -48,22 +49,18 @@ public class VideoFeedViewHolder extends FeedViewHolder {
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void bindData(User user) {
+    public void bindData(User user, RequestOptions options) {
         textViewName.setText(user.getName());
         textViewAccount.setText(user.getAccount());
         Glide.with(itemView.getContext())
                 .load(user.getAvatarPath())
-                .placeholder(android.R.drawable.progress_indeterminate_horizontal) // 加载中显示的默认图
-                .error(android.R.drawable.ic_menu_report_image) // 加载失败显示的图
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // 缓存
+                .apply(options)
                 .circleCrop()
                 .into(imageViewAvatar);
         videoDuration = user.getVideoDuration();
         Glide.with(itemView.getContext())
                 .load(user.getVideoCoverPath())
-                .placeholder(android.R.drawable.progress_indeterminate_horizontal) // 加载中显示的默认图
-                .error(android.R.drawable.ic_menu_report_image) // 加载失败显示的图
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // 缓存
+                .apply(options)
                 .into(imageViewCover);
         textViewCountdown.setText("视频时长: " + videoDuration + "s");
 

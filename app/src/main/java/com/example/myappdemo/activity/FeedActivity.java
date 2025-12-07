@@ -1,8 +1,10 @@
 package com.example.myappdemo.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.myappdemo.feed.FeedListManager;
 import com.example.myappdemo.feed.cardexposure.CardExposureCallback;
 import com.example.myappdemo.feed.cardexposure.CardExposureLogTool;
@@ -51,6 +54,7 @@ public class FeedActivity extends AppCompatActivity {
     private TextView textViewLog;
     private ScrollView scrollViewLog;
     private CardExposureLogTool logTool;
+    private boolean isAddLog = false;
 
 
     @Override
@@ -80,8 +84,12 @@ public class FeedActivity extends AppCompatActivity {
         registry.registerCard(new TextFeedCard());
 
     }
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 清空Glide请求
+        Glide.with(getApplicationContext()).onDestroy();
+    }
     // 初始化UI
     private void initUiViews() {
         switchGridLayout = findViewById(R.id.switchGridLayout);
@@ -119,8 +127,10 @@ public class FeedActivity extends AppCompatActivity {
         FeedDataManager dataManager = new FeedDataManager();
         feedAdapter = new FeedAdapter(dataManager);
         gridLayoutManager = new GridLayoutManager(this, 1);
+        gridLayoutManager.setInitialPrefetchItemCount(10);// 预渲染
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(feedAdapter);
+
         // 卡片列数控制，加载更多
         feedListManager = new FeedListManager(recyclerView, gridLayoutManager, new FeedListManager.LoadMoreCallback() {
             @Override
@@ -156,7 +166,7 @@ public class FeedActivity extends AppCompatActivity {
                 int cardId = feedAdapter.getCardId(position);
                 String log = "开始露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
                 Log.d("CardExposure", log);
-                logTool.addLog(log);
+                if (isAddLog) logTool.addLog(log);
             }
 
             @Override
@@ -164,7 +174,7 @@ public class FeedActivity extends AppCompatActivity {
                 int cardId = feedAdapter.getCardId(position);
                 String log = "露出50% | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
                 Log.d("CardExposure", log);
-                logTool.addLog(log);
+                if (isAddLog) logTool.addLog(log);
             }
 
             @Override
@@ -172,7 +182,7 @@ public class FeedActivity extends AppCompatActivity {
                 int cardId = feedAdapter.getCardId(position);
                 String log = "完整露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
                 Log.d("CardExposure", log);
-                logTool.addLog(log);
+                if (isAddLog) logTool.addLog(log);
                 RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
                 if (viewHolder instanceof FeedViewHolder) {
                     feedAdapter.playVideo((FeedViewHolder) viewHolder, position);
@@ -184,7 +194,7 @@ public class FeedActivity extends AppCompatActivity {
                 int cardId = feedAdapter.getCardId(position);
                 String log = "卡片消失 | cardId: " + cardId;
                 Log.d("CardExposure", log);
-                logTool.addLog(log);
+                if (isAddLog) logTool.addLog(log);
                 if (holder instanceof FeedViewHolder) {
                     feedAdapter.stopVideo((FeedViewHolder) holder, position);
                 }
@@ -214,9 +224,11 @@ public class FeedActivity extends AppCompatActivity {
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     scrollViewLog.setVisibility(View.VISIBLE);
+                    isAddLog = true;
                     Toast.makeText(FeedActivity.this, "显示日志", Toast.LENGTH_SHORT).show();
                 } else {
                     scrollViewLog.setVisibility(View.INVISIBLE);
+                    isAddLog = false;
                     Toast.makeText(FeedActivity.this, "关闭日志", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -229,6 +241,7 @@ public class FeedActivity extends AppCompatActivity {
                 userViewModel.refreshUsers();
             }
         });
+
     }
 
 }

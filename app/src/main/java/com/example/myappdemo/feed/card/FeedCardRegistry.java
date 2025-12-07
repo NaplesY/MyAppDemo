@@ -13,7 +13,7 @@ public class FeedCardRegistry {
 
     // key：viewType，value：卡片
     private final Map<Integer, FeedCard> cardMap = new HashMap<>();
-    private final List<FeedCard> cardList = new ArrayList<>();
+    public final List<FeedCard> cardList = new ArrayList<>();
 
     private FeedCardRegistry() {}
 

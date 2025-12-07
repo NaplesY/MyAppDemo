@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myappdemo.R;
 import com.example.myappdemo.data.User;
 
@@ -20,7 +21,7 @@ public class LoadingFeedViewHolder extends FeedViewHolder{
     }
 
     @Override
-    public void bindData(User user) {
+    public void bindData(User user, RequestOptions options) {
 
     }
 }
