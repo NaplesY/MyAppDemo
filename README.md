@@ -38,6 +38,8 @@ FeedPageDemo： 展示已注册的用户信息，支持下拉刷新，滚动到�
 - 修改了卡片消失事件的逻辑，现在曝光时间回调只需要遍历可见的卡片了，提高了性能
 - 现在视频卡片消失时会停止播放
 - 修改了加载动画不出现的bug
+### v1.5.0   架构调整(2025/12/7 )
+- 重点优化了FeedActivity，解耦出了两个可复用的工具类，FeedListManager是一个RecycleView管理器，CardExposureManager是一个曝光事件管理器，部分加载数据的逻辑放进了ViewModel里，同时也对activity中的代码进行了整理，看起来更清楚
 ## 运行环境
 - Android Studio Otter | 2025.2.1
 - minSdk 24，targetSdk 36

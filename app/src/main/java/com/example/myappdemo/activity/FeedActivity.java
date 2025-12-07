@@ -23,43 +23,40 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.myappdemo.callback.CardExposureListener;
-import com.example.myappdemo.feed.CardExposureCalculator;
-import com.example.myappdemo.feed.CardExposureLogTool;
-import com.example.myappdemo.feed.CardExposureState;
+import com.example.myappdemo.feed.FeedListManager;
+import com.example.myappdemo.feed.cardexposure.CardExposureCallback;
+import com.example.myappdemo.feed.cardexposure.CardExposureLogTool;
+import com.example.myappdemo.feed.cardexposure.CardExposureManager;
 import com.example.myappdemo.feed.FeedAdapter;
 import com.example.myappdemo.R;
 import com.example.myappdemo.callback.FeedItemLongClickListener;
 import com.example.myappdemo.callback.GetUsersCallback;
 import com.example.myappdemo.database.User;
 import com.example.myappdemo.database.UserViewModel;
-import com.example.myappdemo.feed.FeedCardRegistry;
+import com.example.myappdemo.feed.card.FeedCardRegistry;
 import com.example.myappdemo.feed.FeedDataManager;
 import com.example.myappdemo.feed.card.AvatarFeedCard;
 import com.example.myappdemo.feed.card.TextFeedCard;
 import com.example.myappdemo.feed.card.VideoFeedCard;
 import com.example.myappdemo.feed.viewholder.FeedViewHolder;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class FeedActivity extends AppCompatActivity implements CardExposureListener {
+public class FeedActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private FeedAdapter feedAdapter;
     private UserViewModel userViewModel;
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchGridLayout;
     private Switch switchLog;
     private SwipeRefreshLayout swipeRefreshLayout;
     private GridLayoutManager gridLayoutManager;
+    private CardExposureManager cardExposureManager;
+    private FeedListManager feedListManager;
     private TextView textViewLog;
     private ScrollView scrollViewLog;
     private CardExposureLogTool logTool;
-    private boolean isRecording = false;
-    private boolean isLoadingMore = false; // 避免重复加载的标志
-    private Map<Integer, CardExposureState> exposureStateMap = new HashMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,91 +69,70 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
             return insets;
         });
 
+        initUiViews();// 初始化UI
+        initViewModel();// 初始化ViewModel
+        initFeedList();// 初始化Feed流相关
+        initExposureManager(); //初始化曝光时间相关
+        bindUiEvents();// UI交互事件
+
+        userViewModel.initUsers();// 初始化数据
+
+        // 在此注册卡片（先注册优先）
+        FeedCardRegistry registry = FeedCardRegistry.getInstance();
+
+        registry.registerCard(new VideoFeedCard());
+        registry.registerCard(new AvatarFeedCard());
+        registry.registerCard(new TextFeedCard());
+
+    }
+
+
+    // 初始化UI
+    private void initUiViews() {
         switchGridLayout = findViewById(R.id.switchGridLayout);
         switchLog = findViewById(R.id.switchLog);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
         recyclerView = findViewById(R.id.recyclerView1);
         scrollViewLog = findViewById(R.id.scrollViewLog);
         textViewLog = findViewById(R.id.textViewLog);
+
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
+        logTool = new CardExposureLogTool(scrollViewLog, textViewLog);
+    }
+
+    // 初始化VM
+    private void initViewModel() {
+        userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
+
+        // 观察LiveData变化
+        userViewModel.getAllUsersLive().observe(this, users -> {
+            feedAdapter.setAllUsers(users);
+            feedAdapter.notifyDataSetChanged();
+        });
+
+        userViewModel.isLoadingMore().observe(this, isLoading -> {
+            feedListManager.setLoadingMore(isLoading);
+            feedAdapter.setLoading(isLoading);
+        });
+
+        userViewModel.isRefreshing().observe(this, isRefreshing ->
+                swipeRefreshLayout.setRefreshing(isRefreshing));
+    }
+
+    // 调用Feed流逻辑
+    private void initFeedList() {
         FeedDataManager dataManager = new FeedDataManager();
         feedAdapter = new FeedAdapter(dataManager);
         gridLayoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(feedAdapter);
-        userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
-        logTool = new CardExposureLogTool(scrollViewLog, textViewLog);
-
-        FeedCardRegistry registry = FeedCardRegistry.getInstance();
-        cardExposureListeners();
-
-        // 在此注册卡片（先注册优先）
-        registry.registerCard(new VideoFeedCard());
-        registry.registerCard(new AvatarFeedCard());
-        registry.registerCard(new TextFeedCard());
-
-
-        // 数据刷新
-        userViewModel.getAllUsers(new GetUsersCallback() {
-            @SuppressLint("NotifyDataSetChanged")
+        // 卡片列数控制，加载更多
+        feedListManager = new FeedListManager(recyclerView, gridLayoutManager, new FeedListManager.LoadMoreCallback() {
             @Override
-            public void onGetUsersResult(List<User> users) {
-                feedAdapter.setAllUsers(users);
-                feedAdapter.notifyDataSetChanged();
+            public void onLoadMore() {
+                userViewModel.loadMoreUsers();
             }
         });
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                //展示FEED流
-                userViewModel.getAllUsers(new GetUsersCallback() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onGetUsersResult(List<User> users) {
-                        feedAdapter.setAllUsers(users);
-                        feedAdapter.notifyDataSetChanged();
-                        //刷新后取消下拉动画
-                        if (swipeRefreshLayout.isRefreshing()) {
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                });
-            }
-        });
-
-        // 滚动加载更多
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy <= 0) return;
-                LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (lm == null) return;
-                // 最后一个可见项的位置
-                int lastVisiblePos = lm.findLastVisibleItemPosition();
-                // 总Item数
-                int totalItemCount = lm.getItemCount();
-                // 条件：滑到最后一项 + 不在加载中 + 有数据
-                if (lastVisiblePos == totalItemCount - 1
-                        && !isLoadingMore
-                        && totalItemCount > 0) {
-                    loadMoreUser(); // 加载更多
-                }
-            }
-        });
-        // 特殊卡片保持单列
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                int itemType = feedAdapter.getItemViewType(position);
-                if (gridLayoutManager.getSpanCount() == 2) {
-                    return itemType == 0 || itemType == 3 ? 2 : 1;
-                } else {
-                    return 1; // 单列时所有Item都占1列
-                }
-            }
-        });
-
         // 长按删卡
         feedAdapter.onFeedItemLongClickListener(new FeedItemLongClickListener() {
             @Override
@@ -174,14 +150,61 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
                         .show();
             }
         });
+    }
 
-        // 切换单双列
+    // 调用曝光事件逻辑
+    private void initExposureManager() {
+        GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+        cardExposureManager = new CardExposureManager(recyclerView, layoutManager, new CardExposureCallback() {
+            @Override
+            public void onCardStartExpose(int position, float visibleRatio) {
+                int cardId = feedAdapter.getCardId(position);
+                String log = "开始露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
+                Log.d("CardExposure", log);
+                logTool.addLog(log);
+            }
+
+            @Override
+            public void onCardHalfExpose(int position, float visibleRatio) {
+                int cardId = feedAdapter.getCardId(position);
+                String log = "露出50% | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
+                Log.d("CardExposure", log);
+                logTool.addLog(log);
+            }
+
+            @Override
+            public void onCardFullyExpose(int position, float visibleRatio) {
+                int cardId = feedAdapter.getCardId(position);
+                String log = "完整露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
+                Log.d("CardExposure", log);
+                logTool.addLog(log);
+                RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
+                if (viewHolder instanceof FeedViewHolder) {
+                    feedAdapter.playVideo((FeedViewHolder) viewHolder, position);
+                }
+            }
+
+            @Override
+            public void onCardDisappear(RecyclerView.ViewHolder holder, int position) {
+                int cardId = feedAdapter.getCardId(position);
+                String log = "卡片消失 | cardId: " + cardId;
+                Log.d("CardExposure", log);
+                logTool.addLog(log);
+                if (holder instanceof FeedViewHolder) {
+                    feedAdapter.stopVideo((FeedViewHolder) holder, position);
+                }
+            }
+        });
+
+    }
+
+    // 控制UI交互
+    private void bindUiEvents() {
+        // 开关--切换单双列
         switchGridLayout.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                gridLayoutManager.setSpanCount(isChecked ? 2 : 1);
-                feedAdapter.notifyDataSetChanged();
+                feedListManager.switchSpanCount(isChecked);
                 if (isChecked) {
                     Toast.makeText(FeedActivity.this, "切换为双列", Toast.LENGTH_SHORT).show();
                 } else {
@@ -190,7 +213,7 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
             }
         });
 
-        // 显示曝光时间日志
+        // 开关--显示曝光时间日志
         switchLog.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -203,161 +226,19 @@ public class FeedActivity extends AppCompatActivity implements CardExposureListe
                 }
             }
         });
-    }
 
-
-
-    // 加载更多（追加数据）
-    private void loadMoreUser() {
-        isLoadingMore = true;
-        feedAdapter.setLoading(true); // 显示加载中
-        userViewModel.getAllUsers(users -> {
-            isLoadingMore = false;
-            feedAdapter.setLoading(false); // 隐藏加载中
-            feedAdapter.addUsers(users); // 追加数据
-        });
-    }
-
-    // recyclerview监听器-何时检查卡片曝光状态
-    private void cardExposureListeners() {
-        // 卡片消失时
-        recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+        // 下拉刷新
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onChildViewAttachedToWindow(@NonNull View view) {
-            }
-
-            @Override
-            public void onChildViewDetachedFromWindow(@NonNull View view) {
-                RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(view);
-                int position = holder.getBindingAdapterPosition();
-                if (position == RecyclerView.NO_POSITION) {
-                    return;
-                }
-                onCardDisappear(holder, position);
-                // 重置卡片状态
-                CardExposureState state = exposureStateMap.get(position);
-                if (state != null) {
-                    state.reset();
-                    state.setHasDisappear(true);
-                }
-
+            public void onRefresh() {
+                userViewModel.refreshUsers();
             }
         });
-
-        //滚动时和滚动停止时
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                    checkVisibleCards();
-            }
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    checkVisibleCards();
-                }
-            }
-        });
-        //布局改变（单双列切换、刷新……）
-        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                recyclerView.postDelayed(() -> checkVisibleCards(), 100);//防止View加载慢，延迟100ms
-            }
-        });
-        //初始化时
-        recyclerView.postDelayed(this::checkVisibleCards, 100);
-    }
-
-
-
-    @Override
-    public void onCardStartExpose(int position, float visibleRatio) {
-        int cardId = feedAdapter.getCardId(position);
-        String log = "开始露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
-        Log.d("CardExposure", log);
-        logTool.addLog(log);
-    }
-
-    @Override
-    public void onCardHalfExpose(int position, float visibleRatio) {
-        int cardId = feedAdapter.getCardId(position);
-        String log = "露出50% | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
-        Log.d("CardExposure", log);
-        logTool.addLog(log);
-    }
-
-    @Override
-    public void onCardFullyExpose(int position, float visibleRatio) {
-        int cardId = feedAdapter.getCardId(position);
-        String log = "完整露出 | cardId: " + cardId + " | 曝光比例: " + String.format("%.2f", visibleRatio);
-        Log.d("CardExposure", log);
-        logTool.addLog(log);
-        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-        if (viewHolder instanceof FeedViewHolder) {
-            feedAdapter.playVideo((FeedViewHolder) viewHolder, position);
-        }
-    }
-
-    @Override
-    public void onCardDisappear(RecyclerView.ViewHolder holder, int position) {
-        int cardId = feedAdapter.getCardId(position);
-        String log = "卡片消失 | cardId: " + cardId;
-        Log.d("CardExposure", log);
-        logTool.addLog(log);
-        if (holder instanceof FeedViewHolder) {
-            feedAdapter.stopVideo((FeedViewHolder) holder, position);
-        }
-    }
-
-    private void checkVisibleCards() {
-        if (feedAdapter == null || feedAdapter.getItemCount() == 0){
-            return;
-        }
-        int firstVisiblePos = gridLayoutManager.findFirstVisibleItemPosition();
-        int lastVisiblePos = gridLayoutManager.findLastVisibleItemPosition();
-        // 遍历可见卡片
-        for (int position = firstVisiblePos; position <= lastVisiblePos; position++) {
-            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-
-            View cardView = viewHolder != null ? viewHolder.itemView : null;
-            float visibleRatio = 0.0f;
-
-            // 获取曝光状态or新建
-            CardExposureState exposureState = exposureStateMap.computeIfAbsent(position, i -> new CardExposureState(i, false, false, false, true));
-            // 计算曝光比例
-            if (cardView != null) {
-                visibleRatio = CardExposureCalculator.calculateVisibleRatio(cardView);
-            }
-            // 判断曝光状态
-            updateCardExposureState(position, visibleRatio, exposureState);
-        }
-    }
-    //根据曝光比例更新曝光状态，触发回调
-    private void updateCardExposureState(int position, float visibleRatio, CardExposureState exposureState) {
-        if (exposureState == null) {
-            return;
-        }
-        // 卡片露出
-        if (visibleRatio > 0.0f){
-            exposureState.setHasDisappear(false);
-            if (!exposureState.isHasExposed()){
-                onCardStartExpose(position, visibleRatio);
-                exposureState.setHasExposed(true);
-            }
-            // 卡片露出超过50%
-            if (visibleRatio > 0.5f && !exposureState.isHasHalfExposed()){
-                onCardHalfExpose(position, visibleRatio);
-                exposureState.setHasHalfExposed(true);
-            }
-            // 卡片完整露出
-            if (visibleRatio == 1.0f && !exposureState.isHasFullyExposed()){
-                onCardFullyExpose(position, visibleRatio);
-                exposureState.setHasFullyExposed(true);
-            }
-        }
-
     }
 
 }
+
+  
+
+
+

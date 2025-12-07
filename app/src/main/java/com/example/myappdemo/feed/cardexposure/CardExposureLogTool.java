@@ -1,4 +1,4 @@
-package com.example.myappdemo.feed;
+package com.example.myappdemo.feed.cardexposure;
 
 import android.widget.ScrollView;
 import android.widget.TextView;

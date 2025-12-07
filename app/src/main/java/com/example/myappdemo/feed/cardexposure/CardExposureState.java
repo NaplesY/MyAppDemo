@@ -1,4 +1,4 @@
-package com.example.myappdemo.feed;
+package com.example.myappdemo.feed.cardexposure;
 
 public class CardExposureState {
     //用于临时储存卡片曝光状态
