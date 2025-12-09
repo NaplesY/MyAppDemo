@@ -3,6 +3,7 @@ package com.example.myappdemo.utils;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -41,8 +42,7 @@ public class GlidePreCacheUtils {
                                 .downloadOnly() // 下载写入缓存
                                 .apply(cacheOptions)
                                 .load(user.getAvatarPath())
-                                .submit() // 同步执行
-                                .get();
+                                .submit();
                     }
                     // 预缓存视频封面
                     if (user.getVideoCoverPath() != null && !user.getVideoCoverPath().isEmpty()) {
@@ -50,12 +50,11 @@ public class GlidePreCacheUtils {
                                 .downloadOnly()
                                 .apply(cacheOptions)
                                 .load(user.getVideoCoverPath())
-                                .submit()
-                                .get();
+                                .submit();
                     }
                 } catch (Exception e) {
                     // 预缓存失败
-                    throw new RuntimeException(e);
+                    Log.e("GlidePreCache", "预加载失败: " , e);
                 }
             }
     });
