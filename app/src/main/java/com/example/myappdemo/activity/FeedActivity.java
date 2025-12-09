@@ -113,7 +113,12 @@ public class FeedActivity extends AppCompatActivity {
         // 观察LiveData变化
         userViewModel.getAllUsersLive().observe(this, users -> {
             feedAdapter.setAllUsers(users);
-            feedAdapter.notifyDataSetChanged();
+        });
+        // 加载更多时追加新数据
+        userViewModel.getNewUsersLive().observe(this, newUsers -> {
+            if (newUsers != null && !newUsers.isEmpty()) {
+                feedAdapter.addUsers(newUsers);
+            }
         });
 
         userViewModel.isLoadingMore().observe(this, isLoading -> {
@@ -152,6 +157,7 @@ public class FeedActivity extends AppCompatActivity {
                 5
         );
         recyclerView.addOnScrollListener(preloader);
+
 
         // 卡片列数控制，加载更多
         feedListManager = new FeedListManager(recyclerView, gridLayoutManager, new FeedListManager.LoadMoreCallback() {

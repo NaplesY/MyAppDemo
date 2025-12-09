@@ -142,6 +142,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedViewHolder> implements
         if (holder.getItemViewType() == TYPE_LOADING) {
             return;
         }
+
         User user = dataManager.getUser(position);
         holder.bindData(user, imageOptions);
 

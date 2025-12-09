@@ -18,8 +18,8 @@ public class UserViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<User>> allUsersLive = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<Boolean> isLoadingMore = new MutableLiveData<>(false);
-    public final MutableLiveData<Boolean> isRefreshing = new MutableLiveData<>(false);
-
+    private final MutableLiveData<Boolean> isRefreshing = new MutableLiveData<>(false);
+    private final MutableLiveData<List<User>> newUsersLive = new MutableLiveData<>();
     private final UserRepository userRepository;
 
 
@@ -37,12 +37,14 @@ public class UserViewModel extends AndroidViewModel {
         return allUsersLive;
     }
 
+    public LiveData<List<User>> getNewUsersLive() { return newUsersLive; }
+
     public LiveData<Boolean> isLoadingMore() {
         return isLoadingMore;
     }
 
     public LiveData<Boolean> isRefreshing() {
-        return isLoadingMore;
+        return isRefreshing;
     }
 
     //数据库管理
@@ -78,8 +80,8 @@ public class UserViewModel extends AndroidViewModel {
                 List<User> currentList = allUsersLive.getValue();
                 if (currentList != null) {
                     currentList.addAll(users);
-                    allUsersLive.setValue(currentList);
                 }
+                newUsersLive.setValue(users);
                 isLoadingMore.setValue(false);
             }
         });
