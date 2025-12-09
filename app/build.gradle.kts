@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.6.1"
+        versionName = "1.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,19 +51,26 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 
-
+    // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.bumptech.glide:recyclerview-integration:4.16.0") {
+        isTransitive = false
+    }
 
-    //room
+    // room
     val room_version = "2.8.4"
     implementation("androidx.room:room-runtime:${room_version}")
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
-    //协程
+    // 协程
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.room:room-ktx:2.8.4")
+
+    // 创建后台线程 解析xml
+    implementation("androidx.asynclayoutinflater:asynclayoutinflater:1.0.0")
+
 
 }

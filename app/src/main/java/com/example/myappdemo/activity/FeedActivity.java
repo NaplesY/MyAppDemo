@@ -1,10 +1,8 @@
 package com.example.myappdemo.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -24,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
+import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.example.myappdemo.feed.FeedListManager;
 import com.example.myappdemo.feed.cardexposure.CardExposureCallback;
 import com.example.myappdemo.feed.cardexposure.CardExposureLogTool;
@@ -39,6 +39,7 @@ import com.example.myappdemo.feed.card.AvatarFeedCard;
 import com.example.myappdemo.feed.card.TextFeedCard;
 import com.example.myappdemo.feed.card.VideoFeedCard;
 import com.example.myappdemo.feed.adapter.viewholder.FeedViewHolder;
+import com.example.myappdemo.utils.FeedViewPrerenderUtils;
 
 public class FeedActivity extends AppCompatActivity {
 
@@ -84,12 +85,14 @@ public class FeedActivity extends AppCompatActivity {
         registry.registerCard(new TextFeedCard());
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 清空Glide请求
-        Glide.with(getApplicationContext()).onDestroy();
+        // 清空卡片缓冲池
+        FeedViewPrerenderUtils.getInstance().clear();
     }
+
     // 初始化UI
     private void initUiViews() {
         switchGridLayout = findViewById(R.id.switchGridLayout);
@@ -125,11 +128,30 @@ public class FeedActivity extends AppCompatActivity {
     // 调用Feed流逻辑
     private void initFeedList() {
         FeedDataManager dataManager = new FeedDataManager();
-        feedAdapter = new FeedAdapter(dataManager);
+        ViewPreloadSizeProvider<String> preloadSizeProvider = new ViewPreloadSizeProvider<>();
+        feedAdapter = new FeedAdapter(this, dataManager, preloadSizeProvider);
         gridLayoutManager = new GridLayoutManager(this, 1);
-        gridLayoutManager.setInitialPrefetchItemCount(10);// 预渲染
         recyclerView.setLayoutManager(gridLayoutManager);
+        // 卡片预渲染
+        android.os.Looper.myQueue().addIdleHandler(new android.os.MessageQueue.IdleHandler() {
+            @Override
+            public boolean queueIdle() { // 只有当CPU空闲时才预渲染
+                FeedViewPrerenderUtils.getInstance().prerender(FeedActivity.this, 1, 5, recyclerView);
+                FeedViewPrerenderUtils.getInstance().prerender(FeedActivity.this, 2, 5, recyclerView);
+                FeedViewPrerenderUtils.getInstance().prerender(FeedActivity.this, 3, 5, recyclerView);
+                return false; // 返回 false 表示只执行一次，执行完就移除监听
+            }
+        });
         recyclerView.setAdapter(feedAdapter);
+
+        // Glide 图片预加载
+        RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<>(
+                Glide.with(this),
+                feedAdapter,
+                preloadSizeProvider,
+                5
+        );
+        recyclerView.addOnScrollListener(preloader);
 
         // 卡片列数控制，加载更多
         feedListManager = new FeedListManager(recyclerView, gridLayoutManager, new FeedListManager.LoadMoreCallback() {

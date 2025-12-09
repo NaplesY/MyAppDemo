@@ -10,7 +10,6 @@ public class FeedDataManager {
     private List<User> allUsers = new ArrayList<>();
 
     // 刷新数据
-
     public void setAllUsers(List<User> allUsers) {
         List<User> shuffledUsers = new ArrayList<>(allUsers);
         Collections.shuffle(shuffledUsers);
