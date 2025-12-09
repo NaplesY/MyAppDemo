@@ -124,6 +124,86 @@ public class UserRepository {
         });
     }
 
+    // 测试用！一键生成几个垃圾数据
+    public void generateTestData() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
 
+                User u1 = new User("test1", "123456");
+                u1.setName("小张");
+                u1.setHasVideo(true);
+                u1.setVideoDuration(15);
+                u1.setVideoCoverPath("https://picsum.photos/300/200?t=156194");
+                userDao.insertUser(u1);
+
+                User u2 = new User("test2", "123456");
+                u2.setName("小王");
+                u2.setHasAvatar(true);
+                u2.setAvatarPath("https://picsum.photos/100/100?t=74864");
+                userDao.insertUser(u2);
+
+                User u3 = new User("test3", "123456");
+                u3.setName("文字卡片");
+                userDao.insertUser(u3);
+
+                User u4 = new User("test4", "123456");
+                u4.setName("视频卡片");
+                u4.setHasAvatar(true);
+                u4.setAvatarPath("https://picsum.photos/100/100?t=849");
+                u4.setHasVideo(true);
+                u4.setVideoDuration(5);
+                u4.setVideoCoverPath("https://picsum.photos/300/200?t=1986189");
+                userDao.insertUser(u4);
+
+                User u5 = new User("test5", "123456");
+                u5.setName("图像卡片");
+                u5.setHasAvatar(true);
+                u5.setAvatarPath("https://picsum.photos/100/100?t=884");
+                userDao.insertUser(u5);
+
+                User u6 = new User("test6", "123456");
+                u6.setName("小李");
+                u6.setHasAvatar(true);
+                u6.setAvatarPath("https://picsum.photos/100/100?t=1111");
+                u6.setHasVideo(true);
+                u6.setVideoDuration(10);
+                u6.setVideoCoverPath("https://picsum.photos/300/200?t=68168");
+                userDao.insertUser(u6);
+
+                User u7 = new User("test7", "123456");
+                u7.setName("111");
+                userDao.insertUser(u7);
+
+                User u8 = new User("test8", "123456");
+                u8.setName("222");
+                u8.setHasAvatar(true);
+                u8.setAvatarPath("https://picsum.photos/100/100?t=2784");
+                userDao.insertUser(u8);
+
+                User u9 = new User("test9", "123456");
+                u9.setName("凑数的");
+                userDao.insertUser(u9);
+
+                User u10 = new User("test10", "123456");
+                u10.setName("qwerty");
+                u10.setHasAvatar(true);
+                u10.setAvatarPath("https://picsum.photos/100/100?t=114511");
+                u10.setHasVideo(true);
+                u10.setVideoDuration(8);
+                u10.setVideoCoverPath("https://picsum.photos/300/200?t=1919810");
+                userDao.insertUser(u10);
+
+                User u11 = new User("test11", "123456");
+                u11.setName("afwfawf");
+                u11.setHasAvatar(true);
+                u11.setAvatarPath("https://picsum.photos/100/100?t=114831");
+                u11.setHasVideo(true);
+                u11.setVideoDuration(4);
+                u11.setVideoCoverPath("https://picsum.photos/300/200?t=14534");
+                userDao.insertUser(u11);
+            }
+        });
+    }
 
 }

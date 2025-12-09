@@ -105,9 +105,19 @@
         android:id="@+id/buttonDeleteAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
         android:layout_marginBottom="60dp"
-        android:text="删库"
+        android:text="测试用！\n删库"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/buttonLogin"
+        app:layout_constraintStart_toStartOf="@+id/buttonLogin" />
+
+    <Button
+        android:id="@+id/buttonTestData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试用！\n直接注册一堆数据"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonDeleteAll"
+        app:layout_constraintEnd_toEndOf="@+id/buttonRegister"
+        app:layout_constraintStart_toStartOf="@+id/buttonRegister"
+        app:layout_constraintTop_toTopOf="@+id/buttonDeleteAll" />
 </androidx.constraintlayout.widget.ConstraintLayout>

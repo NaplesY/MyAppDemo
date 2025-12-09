@@ -23,7 +23,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     EditText etAccount, etPassword;
-    Button btnRegister, btnLogin, btnDeleteAll;
+    Button btnRegister, btnLogin, btnDeleteAll, btnTestData;
     UserViewModel userViewModel;
 
 
@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.buttonRegister);
         btnLogin = findViewById(R.id.buttonLogin);
         btnDeleteAll = findViewById(R.id.buttonDeleteAll);
+        btnTestData = findViewById(R.id.buttonTestData);
 
         userViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(UserViewModel.class);
 
@@ -83,6 +84,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 userViewModel.deleteAllUsers();
+            }
+        });
+
+        btnTestData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userViewModel.generateTestData();
             }
         });
     }

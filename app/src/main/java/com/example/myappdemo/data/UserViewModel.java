@@ -107,4 +107,8 @@ public class UserViewModel extends AndroidViewModel {
         });
     }
 
+    // 生成测试数据
+    public void generateTestData() {
+        userRepository.generateTestData();
+    }
 }
